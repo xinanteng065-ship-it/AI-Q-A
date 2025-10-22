@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITスキル診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #9dc8f3;
+            color: #212529;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #6c757d;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #0d6efd;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .question-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0d6efd;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 24px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+            color: #495057;
+        }
+
+        .option:hover {
+            border-color: #0d6efd;
+            background: #f8f9fa;
+        }
+
+        .option.selected {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+            font-weight: 500;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 48px;
+        }
+
+        .btn-submit {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #0b5ed7;
+        }
+
+        .btn-submit:disabled {
+            background: #6c757d;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            display: none;
+        }
+
+        .result-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 12px;
+        }
+
+        .result-subtitle {
+            font-size: 16px;
+            color: #6c757d;
+        }
+
+        .skill-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #0d6efd;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .skill-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .skill-badge {
+            background: #0d6efd;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .skill-description {
+            color: #495057;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .skills-list {
+            margin-bottom: 20px;
+        }
+
+        .skills-list-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 12px;
+        }
+
+        .skill-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .skill-tag {
+            background: #e7f1ff;
+            color: #0d6efd;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .skill-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 0;
+            border-top: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .meta-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6c757d;
+            min-width: 100px;
+        }
+
+        .difficulty-bar {
+            flex: 1;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            max-width: 200px;
+        }
+
+        .difficulty-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            border-radius: 4px;
+        }
+
+        .skill-reason {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #0d6efd;
+        }
+
+        .reason-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+
+        .reason-text {
+            color: #495057;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .btn-restart {
+            background: white;
+            color: #0d6efd;
+            border: 2px solid #0d6efd;
+            padding: 14px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 24px;
+        }
+
+        .btn-restart:hover {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 40px 16px;
+            }
+
+            .question-section {
+                padding: 28px 20px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .skill-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+    </div>
+
+    <div class="container">
+        <div id="quizScreen">
+            <div class="header">
+                <h1>ITスキル診断</h1>
+                <p>10問の質問に答えて、あなたに最適なITスキルを見つけましょう</p>
+            </div>
+
+            <div id="questionsContainer"></div>
+
+            <div class="submit-section">
+                <button class="btn-submit" id="submitBtn" onclick="submitQuiz()" disabled>
+                    診断結果を見る
+                </button>
+            </div>
+        </div>
+
+        <div id="resultScreen" class="result-container">
+            <div class="result-header">
+                <h2 class="result-title">診断結果</h2>
+                <p class="result-subtitle">あなたに最適なITスキル</p>
+            </div>
+            <div id="resultsContainer"></div>
+            <div style="text-align: center;">
+                <button class="btn-restart" onclick="restartQuiz()">
+                    もう一度診断する
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "プログラミングで最も興味があるのは？",
+                options: [
+                    { text: "美しいWebサイトやアプリのデザイン", value: "design" },
+                    { text: "複雑なロジックやアルゴリズムの実装", value: "logic" },
+                    { text: "大量のデータの分析と可視化", value: "data" },
+                    { text: "サーバーやインフラの構築・管理", value: "infra" },
+                    { text: "ユーザー体験の向上と最適化", value: "ux" }
+                ]
+            },
+            {
+                id: 2,
+                question: "作業スタイルはどれに近い？",
+                options: [
+                    { text: "目に見える成果をすぐに確認したい", value: "visual" },
+                    { text: "じっくり考えて最適解を見つけたい", value: "analytical" },
+                    { text: "データから洞察を引き出したい", value: "insight" },
+                    { text: "システムの安定性を重視したい", value: "stable" },
+                    { text: "新しい技術をどんどん試したい", value: "innovative" }
+                ]
+            },
+            {
+                id: 3,
+                question: "チーム開発において重視することは？",
+                options: [
+                    { text: "デザイナーとの協業", value: "design_collab" },
+                    { text: "コードの品質と保守性", value: "quality" },
+                    { text: "データドリブンな意思決定", value: "data_driven" },
+                    { text: "システムの可用性とスケーラビリティ", value: "scalability" },
+                    { text: "ユーザーフィードバックの反映", value: "feedback" }
+                ]
+            },
+            {
+                id: 4,
+                question: "学習スタイルは？",
+                options: [
+                    { text: "実際に作りながら学ぶ", value: "practical" },
+                    { text: "理論をしっかり理解してから実践", value: "theoretical" },
+                    { text: "事例研究やケーススタディ", value: "case_study" },
+                    { text: "公式ドキュメントを読み込む", value: "documentation" },
+                    { text: "コミュニティで情報交換しながら", value: "community" }
+                ]
+            },
+            {
+                id: 5,
+                question: "どんなプロジェクトにワクワクする？",
+                options: [
+                    { text: "SNSやECサイトなどのWebアプリ", value: "webapp" },
+                    { text: "AIや機械学習を使ったシステム", value: "ai_ml" },
+                    { text: "ビジネス分析やレポート自動化", value: "business" },
+                    { text: "大規模なシステムのインフラ構築", value: "infrastructure" },
+                    { text: "モバイルアプリ開発", value: "mobile" }
+                ]
+            },
+            {
+                id: 6,
+                question: "問題解決のアプローチは？",
+                options: [
+                    { text: "直感的にデザインしながら解決", value: "intuitive" },
+                    { text: "論理的に分析して解決", value: "logical" },
+                    { text: "データを見て判断", value: "data_based" },
+                    { text: "ベストプラクティスを調査", value: "research" },
+                    { text: "試行錯誤しながら解決", value: "trial_error" }
+                ]
+            },
+            {
+                id: 7,
+                question: "技術トレンドへの関心は？",
+                options: [
+                    { text: "最新のUIフレームワークやデザインツール", value: "ui_trends" },
+                    { text: "新しいプログラミング言語やパラダイム", value: "lang_trends" },
+                    { text: "データサイエンスやAIの進化", value: "ai_trends" },
+                    { text: "クラウドやコンテナ技術", value: "cloud_trends" },
+                    { text: "ユーザビリティや心理学", value: "ux_trends" }
+                ]
+            },
+            {
+                id: 8,
+                question: "理想的な開発環境は？",
+                options: [
+                    { text: "ブラウザとエディタだけでOK", value: "simple_env" },
+                    { text: "IDE完備の統合開発環境", value: "ide_env" },
+                    { text: "JupyterやNotebook系ツール", value: "notebook_env" },
+                    { text: "ターミナルとコマンドライン", value: "cli_env" },
+                    { text: "ノーコード・ローコードツール", value: "nocode_env" }
+                ]
+            },
+            {
+                id: 9,
+                question: "成果物として作りたいものは？",
+                options: [
+                    { text: "見た目が美しいWebサイト", value: "beautiful_web" },
+                    { text: "効率的なアルゴリズムやツール", value: "efficient_tool" },
+                    { text: "インサイトを得られるダッシュボード", value: "dashboard" },
+                    { text: "安定稼働するシステム基盤", value: "stable_system" },
+                    { text: "使いやすいアプリケーション", value: "usable_app" }
+                ]
+            },
+            {
+                id: 10,
+                question: "将来的にどんな役割を目指したい？",
+                options: [
+                    { text: "フロントエンドエンジニア / UI開発者", value: "frontend" },
+                    { text: "バックエンドエンジニア / アーキテクト", value: "backend" },
+                    { text: "データサイエンティスト / アナリスト", value: "data_scientist" },
+                    { text: "DevOpsエンジニア / SRE", value: "devops" },
+                    { text: "フルスタックエンジニア / プロダクトマネージャー", value: "fullstack" }
+                ]
+            }
+        ];
+
+        let answers = {};
+
+        function initQuiz() {
+            const container = document.getElementById('questionsContainer');
+            
+            questions.forEach((question, index) => {
+                const section = document.createElement('div');
+                section.className = 'question-section';
+                section.innerHTML = `
+                    <div class="question-number">質問 ${index + 1} / 10</div>
+                    <div class="question-title">${question.question}</div>
+                    <div class="options" id="options-${question.id}">
+                        ${question.options.map((option, optIndex) => `
+                            <div class="option" onclick="selectOption(${question.id}, ${optIndex}, '${option.value}')">
+                                ${option.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+        }
+
+        function selectOption(questionId, optionIndex, value) {
+            answers[questionId] = value;
+            
+            const optionsContainer = document.getElementById(`options-${questionId}`);
+            const options = optionsContainer.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+            
+            updateProgress();
+            updateSubmitButton();
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(answers).length;
+            const progress = (answeredCount / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateSubmitButton() {
+            const allAnswered = Object.keys(answers).length === questions.length;
+            document.getElementById('submitBtn').disabled = !allAnswered;
+        }
+
+        function analyzeAnswers() {
+            const scores = {
+                frontend: 0,
+                backend: 0,
+                data: 0,
+                devops: 0,
+                fullstack: 0
+            };
+
+            const answerValues = Object.values(answers);
+            
+            answerValues.forEach(answer => {
+                if (['design', 'visual', 'design_collab', 'ui_trends', 'simple_env', 'beautiful_web', 'frontend'].includes(answer)) {
+                    scores.frontend += 2;
+                }
+                if (['logic', 'analytical', 'quality', 'lang_trends', 'ide_env', 'efficient_tool', 'backend'].includes(answer)) {
+                    scores.backend += 2;
+                }
+                if (['data', 'insight', 'data_driven', 'case_study', 'ai_trends', 'notebook_env', 'dashboard', 'data_scientist'].includes(answer)) {
+                    scores.data += 2;
+                }
+                if (['infra', 'stable', 'scalability', 'documentation', 'cloud_trends', 'cli_env', 'stable_system', 'devops'].includes(answer)) {
+                    scores.devops += 2;
+                }
+                if (['ux', 'innovative', 'feedback', 'practical', 'ux_trends', 'nocode_env', 'usable_app', 'fullstack'].includes(answer)) {
+                    scores.fullstack += 2;
+                }
+            });
+
+            const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            
+            const skillMapping = {
+                frontend: {
+                    name: 'フロントエンド開発',
+                    skills: ['React / Vue.js', 'TypeScript', 'Tailwind CSS'],
+                    description: 'ユーザーが直接触れる画面を作成するスキル。デザインとコードを融合させ、美しく使いやすいインターフェースを実現します。',
+                    difficulty: 60,
+                    reason: 'デザインへの関心とビジュアル重視の姿勢から、UI開発に適性があります。実際に目で見える成果をすぐに確認できるため、モチベーションを保ちながら学習を進められるでしょう。'
+                },
+                backend: {
+                    name: 'バックエンド開発',
+                    skills: ['Python / Node.js', 'PostgreSQL', 'REST API設計'],
+                    description: 'サーバー側のロジックとデータ処理を担当。堅牢で効率的なシステムの基盤を構築します。',
+                    difficulty: 75,
+                    reason: 'ロジカルな思考と品質重視の姿勢から、サーバーサイド開発に向いています。複雑な問題を論理的に分解し、最適な解決策を見出す能力が活かせます。'
+                },
+                data: {
+                    name: 'データサイエンス',
+                    skills: ['Python (Pandas/NumPy)', 'SQL', 'Tableau / Power BI'],
+                    description: 'データから価値ある洞察を引き出し、ビジネス判断をサポート。統計とプログラミングの融合分野です。',
+                    difficulty: 80,
+                    reason: 'データ分析への興味とインサイト志向から、データサイエンスが最適です。データから意味を見出し、それをビジネス価値に変換する能力が期待できます。'
+                },
+                devops: {
+                    name: 'DevOps / インフラ',
+                    skills: ['AWS / Azure', 'Docker / Kubernetes', 'Terraform'],
+                    description: 'システムの安定運用と自動化を実現。開発と運用を橋渡しする重要な役割です。',
+                    difficulty: 85,
+                    reason: '安定性重視とインフラへの関心から、DevOpsエンジニアに適性があります。システム全体を俯瞰し、継続的な改善を推進する姿勢が強みになります。'
+                },
+                fullstack: {
+                    name: 'フルスタック開発',
+                    skills: ['React + Node.js', 'MongoDB', 'Next.js / Remix'],
+                    description: 'フロントエンドからバックエンドまで幅広く対応。プロダクト全体を見渡せる総合力が強みです。',
+                    difficulty: 70,
+                    reason: '多様なスキルへの関心とユーザー視点から、フルスタック開発が向いています。幅広い技術領域に対応できる柔軟性と学習意欲が活かせるでしょう。'
+                }
+            };
+
+            const topSkill = sortedScores.slice(0, 1).map(([key, score]) => ({
+                ...skillMapping[key],
+                score: score
+            }));
+
+            return topSkill;
+        }
+
+        function submitQuiz() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            const resultScreen = document.getElementById('resultScreen');
+            resultScreen.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            const skills = analyzeAnswers();
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '';
+            
+            skills.forEach((skill) => {
+                const skillCard = document.createElement('div');
+                skillCard.className = 'skill-card';
+                skillCard.innerHTML = `
+                    <div class="skill-header">
+                        <div class="skill-name">${skill.name}</div>
+                    </div>
+                    <div class="skill-description">${skill.description}</div>
+                    <div class="skills-list">
+                        <div class="skills-list-title">推奨スキル</div>
+                        <div class="skill-tags">
+                            ${skill.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="skill-meta">
+                        <span class="meta-label">習得難易度</span>
+                        <div class="difficulty-bar">
+                            <div class="difficulty-fill" style="width: ${skill.difficulty}%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-reason">
+                        <div class="reason-title">向いている理由</div>
+                        <div class="reason-text">${skill.reason}</div>
+                    </div>
+                `;
+                resultsContainer.appendChild(skillCard);
+            });
+        }
+
+        function restartQuiz() {
+            answers = {};
+            document.getElementById('resultScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+            
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            updateSubmitButton();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        initQuiz();
+    </script>
+</body>
+</html>
