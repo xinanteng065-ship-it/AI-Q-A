@@ -361,14 +361,11 @@
             </div>
         </div>
     </div>
-    <div style="text-align: center; margin: 20px 0;">
-  <a href="https://px.a8.net/svt/ejp?a8mat=45G9TJ+ADW8OI+589S+5Z6WX" rel="nofollow">
-    <img border="0" width="468" height="60" alt=""
-         src="https://www22.a8.net/svt/bgt?aid=251022007628&wid=001&eno=01&mid=s00000024400001004000&mc=1">
+    <div style="text-align: center;">
+  <a href="https://px.a8.net/svt/ejp?a8mat=45G9TJ+ADW8OI+589S+5ZEMP" rel="nofollow">
+    <img border="0" width="320" height="50" alt="" src="https://www24.a8.net/svt/bgt?aid=251022007628&wid=001&eno=01&mid=s00000024400001005000&mc=1">
   </a>
-  <!-- トラッキング用1px画像も同じ位置に置く -->
-  <img border="0" width="1" height="1"
-       src="https://www15.a8.net/0.gif?a8mat=45G9TJ+ADW8OI+589S+5Z6WX" alt="">
+  <img border="0" width="1" height="1" src="https://www16.a8.net/0.gif?a8mat=45G9TJ+ADW8OI+589S+5ZEMP" alt="">
 </div>
     <script>
         const questions = [
@@ -649,7 +646,7 @@ const shareSection = document.createElement('div');
 shareSection.style.textAlign = 'center';
 shareSection.style.marginTop = '40px';
 
-const shareText = encodeURIComponent(`私は「${skill.name}」タイプでした！💡\nあなたもITスキル診断を試してみよう👇`);
+const shareText = encodeURIComponent(`私は「${skill.name}」タイプでした！💡 あなたもITスキル診断を試してみよう👇`);
 const shareUrl = encodeURIComponent(window.location.href);
 
 // シェアボタンのHTML
@@ -657,21 +654,20 @@ shareSection.innerHTML = `
     <p style="margin-bottom: 20px; font-weight:600; color:#212529;">🔗 結果をシェアする</p>
     <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
         <!-- LINE -->
-        <a href="https://social-plugins.line.me/lineit/share?url=${shareUrl}" 
+        <a href="https://social-plugins.line.me/lineit/share?url=${shareUrl}&text=${shareText}" 
            target="_blank" 
            style="background:#06C755; color:white; padding:12px 20px; border-radius:8px; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:8px;">
            <img src="https://cdn-icons-png.flaticon.com/512/124/124027.png" alt="LINE" style="width:20px; height:20px;">
            LINEでシェア
         </a>
 
-        <a href="https://twitter.com/intent/tweet?text=..." 
-   target="_blank" 
-   style="background:#999999; color:white; padding:12px 20px; border-radius:8px;
-          text-decoration:none; font-weight:600; display:flex; align-items:center; gap:8px;">
-   <img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="X" style="width:20px; height:20px;">
-   Xでシェア
-</a>
-
+        <!-- X (Twitter) -->
+        <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" 
+           target="_blank" 
+           style="background:#999999; color:white; padding:12px 20px; border-radius:8px; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:8px;">
+           <img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="X" style="width:20px; height:20px;">
+           Xでシェア
+        </a>
 
         <!-- メール -->
         <a href="mailto:?subject=私のITスキル診断結果&body=${shareText}%0A${shareUrl}" 
