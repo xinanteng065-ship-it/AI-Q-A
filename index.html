@@ -646,7 +646,8 @@ const shareSection = document.createElement('div');
 shareSection.style.textAlign = 'center';
 shareSection.style.marginTop = '40px';
 
-const shareText = encodeURIComponent(`私は「${skill.name}」タイプでした！💡 あなたもITスキル診断を試してみよう👇`);
+const shareTextPlain = `私は「${skill.name}」タイプでした！💡 あなたもITスキル診断を試してみよう👇`;
+const shareText = encodeURIComponent(shareTextPlain);
 const shareUrl = encodeURIComponent(window.location.href);
 
 // シェアボタンのHTML
